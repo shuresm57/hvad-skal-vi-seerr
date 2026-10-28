@@ -34,11 +34,15 @@ python train_local.py                   # retrains, promotion-gated
 python recommend.py                     # ranks + pushes to Jellyfin
 ```
 
-Put those three commands (export, train, recommend) in a cron job to automate it, e.g.:
+Put those three commands (export, train, recommend) in a cron job to automate
+it. On a NixOS box without a system-wide Python, that's:
 
 ```
-0 4 * * * cd /root/hvad-skal-vi-seerr && . .env.local && python export_history.py && python train_local.py && python recommend.py >> /var/log/hvad-skal-vi-seerr.log 2>&1
+0 4 * * * cd /root/hvad-skal-vi-seerr && set -a && . .env.local && set +a && nix-shell -p python3 python3Packages.numpy python3Packages.pandas python3Packages.requests --run "python3 export_history.py && python3 train_local.py && python3 recommend.py" >> /var/log/hvad-skal-vi-seerr.log 2>&1
 ```
+
+`set -a` before sourcing `.env.local` is required - plain `. .env.local`
+only sets shell variables, it doesn't export them to the Python processes.
 
 ## Files
 
