@@ -34,21 +34,11 @@ python train_local.py                   # retrains, promotion-gated
 python recommend.py                     # ranks + pushes to Jellyfin
 ```
 
-Or as one container:
+Put those three commands (export, train, recommend) in a cron job to automate it, e.g.:
 
 ```
-docker build -t hvad-skal-vi-seerr .
-docker run --rm --network host \
-  -e JELLYFIN_URL -e JELLYFIN_API_KEY -e JELLYFIN_USER_ID \
-  -e JELLYSEERR_URL -e JELLYSEERR_API_KEY \
-  -v $(pwd):/app hvad-skal-vi-seerr
+0 4 * * * cd /root/hvad-skal-vi-seerr && . .env.local && python export_history.py && python train_local.py && python recommend.py >> /var/log/hvad-skal-vi-seerr.log 2>&1
 ```
-
-The `-v $(pwd):/app` mount is what makes retraining stateful - without it,
-`library.csv`, `models/`, and `metrics_history.csv` would reset every run and
-the promotion gate would have nothing to compare against.
-
-Put that `docker run` line in a cron job to automate it.
 
 ## Files
 
