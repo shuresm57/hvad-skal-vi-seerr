@@ -1,4 +1,5 @@
-"""Local inference: recommend movies using the model trained in train.ipynb on Colab.
+"""Local inference: rank your own unwatched Jellyfin library using the classifier
+trained in train.ipynb on Colab from your exported library.csv.
 
 Needs only numpy + pandas (see requirements-infer.txt) - no torch required here.
 """
@@ -12,51 +13,51 @@ import pandas as pd
 MODELS_DIR = Path(__file__).parent / "models"
 
 
-def load_artifacts():
-    user_emb = np.load(MODELS_DIR / "user_emb.npy")
-    item_emb = np.load(MODELS_DIR / "item_emb.npy")
-    user_bias = np.load(MODELS_DIR / "user_bias.npy")
-    item_bias = np.load(MODELS_DIR / "item_bias.npy")
-    global_bias = json.loads((MODELS_DIR / "global_bias.json").read_text())["global_bias"]
-    user_id_map = json.loads((MODELS_DIR / "user_id_map.json").read_text())
-    item_id_map = json.loads((MODELS_DIR / "item_id_map.json").read_text())
-    seen_items = json.loads((MODELS_DIR / "seen_items.json").read_text())
-    movies = pd.read_csv(MODELS_DIR / "movies.csv")
-    return user_emb, item_emb, user_bias, item_bias, global_bias, user_id_map, item_id_map, seen_items, movies
+def load_model():
+    weights = np.load(MODELS_DIR / "weights.npy")
+    bias = json.loads((MODELS_DIR / "bias.json").read_text())["bias"]
+    genre_vocab = json.loads((MODELS_DIR / "genre_vocab.json").read_text())
+    year_stats = json.loads((MODELS_DIR / "year_stats.json").read_text())
+    return weights, bias, genre_vocab, year_stats
 
 
-def recommend(user_id: str, top_n: int = 10):
-    (user_emb, item_emb, user_bias, item_bias, global_bias,
-     user_id_map, item_id_map, seen_items, movies) = load_artifacts()
+def featurize(df, genre_vocab, year_stats):
+    genre_index = {g: i for i, g in enumerate(genre_vocab)}
+    genre_lists = df["genres"].fillna("").apply(lambda g: g.split("|") if g else [])
 
-    if user_id not in user_id_map:
-        sample = ", ".join(list(user_id_map)[:5])
-        raise SystemExit(f"Unknown user_id '{user_id}'. Example valid ids: {sample}, ...")
+    genre_features = np.zeros((len(df), len(genre_vocab)), dtype=np.float32)
+    for row, genre_list in enumerate(genre_lists):
+        for g in genre_list:
+            if g in genre_index:
+                genre_features[row, genre_index[g]] = 1.0
 
-    u = user_id_map[user_id]
-    scores = global_bias + user_bias[u] + item_bias + item_emb @ user_emb[u]
+    year = df["year"].fillna(year_stats["mean"])
+    year_feature = ((year - year_stats["mean"]) / year_stats["std"]).to_numpy(dtype=np.float32).reshape(-1, 1)
 
-    already_seen = {item_id_map[i] for i in seen_items.get(user_id, []) if i in item_id_map}
-    ranked = np.argsort(-scores)
-    idx_to_item_id = {v: k for k, v in item_id_map.items()}
-    titles_by_id = movies.set_index("item_id")["title"]
+    return np.concatenate([genre_features, year_feature], axis=1)
 
-    print(f"Top {top_n} recommendations for user {user_id}:")
-    shown = 0
-    for item_idx in ranked:
-        if item_idx in already_seen:
-            continue
-        item_id = idx_to_item_id[item_idx]
-        title = titles_by_id.get(int(item_id), "Unknown title")
-        print(f"{shown + 1:>2}. {title}  (predicted rating: {scores[item_idx]:.2f})")
-        shown += 1
-        if shown == top_n:
-            break
+
+def recommend(library_path: str, top_n: int):
+    weights, bias, genre_vocab, year_stats = load_model()
+    df = pd.read_csv(library_path)
+
+    unwatched = df[df["label"] == 0].reset_index(drop=True)
+    if unwatched.empty:
+        print("Nothing unwatched in this library export - time to request more.")
+        return
+
+    X = featurize(unwatched, genre_vocab, year_stats)
+    scores = 1 / (1 + np.exp(-(X @ weights + bias)))
+    unwatched = unwatched.assign(score=scores).sort_values("score", ascending=False)
+
+    print(f"Top {top_n} picks from what's already in your library:")
+    for rank, row in enumerate(unwatched.head(top_n).itertuples(), start=1):
+        print(f"{rank:>2}. {row.title} ({row.year})  [{row.genres}]  score={row.score:.2f}")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Recommend movies from the matrix-factorization model trained on Colab.")
-    parser.add_argument("--user_id", required=True, help="MovieLens user id, e.g. 42")
+    parser = argparse.ArgumentParser(description="Rank your unwatched Jellyfin library with the model trained on Colab.")
+    parser.add_argument("--library", default="library.csv", help="path to the CSV from export_history.py")
     parser.add_argument("--top_n", type=int, default=10)
     args = parser.parse_args()
-    recommend(args.user_id, args.top_n)
+    recommend(args.library, args.top_n)
