@@ -98,7 +98,11 @@ def main():
         watched = bool(user_data.get("Played")) or user_data.get("PlayCount", 0) > 0
         tmdb_id = (item.get("ProviderIds") or {}).get("Tmdb")
         requested = tmdb_id in requested_tmdb_ids if tmdb_id else False
-        label = watched or requested or bool(user_data.get("IsFavorite"))
+        # requested is nearly always true in a Jellyseerr-driven library (that's how
+        # items get downloaded in the first place), so it's kept as an informational
+        # column but deliberately left out of the label - only "did you actually watch
+        # it" is a useful positive signal here.
+        label = watched or bool(user_data.get("IsFavorite"))
         rows.append({
             "item_id": item["Id"],
             "title": item.get("Name", ""),
