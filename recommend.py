@@ -49,7 +49,7 @@ def jellyfin_push(item_ids, collection_name):
         f"{base_url}/Users/{user_id}/Items",
         headers=headers,
         params={"IncludeItemTypes": "BoxSet", "Recursive": "true", "SearchTerm": collection_name},
-        timeout=15,
+        timeout=60,
     )
     search.raise_for_status()
     existing = next((i for i in search.json()["Items"] if i["Name"] == collection_name), None)
@@ -59,13 +59,13 @@ def jellyfin_push(item_ids, collection_name):
             f"{base_url}/Collections",
             headers=headers,
             params={"Name": collection_name, "Ids": ",".join(item_ids), "userId": user_id},
-            timeout=15,
+            timeout=60,
         ).raise_for_status()
         print(f"created Jellyfin collection '{collection_name}' with {len(item_ids)} items")
         return
 
     collection_id = existing["Id"]
-    current = requests.get(f"{base_url}/Items", headers=headers, params={"ParentId": collection_id}, timeout=15)
+    current = requests.get(f"{base_url}/Items", headers=headers, params={"ParentId": collection_id}, timeout=60)
     current.raise_for_status()
     current_ids = [i["Id"] for i in current.json()["Items"]]
     if current_ids:
@@ -73,14 +73,14 @@ def jellyfin_push(item_ids, collection_name):
             f"{base_url}/Collections/{collection_id}/Items",
             headers=headers,
             params={"ids": ",".join(current_ids)},
-            timeout=15,
+            timeout=60,
         ).raise_for_status()
 
     requests.post(
         f"{base_url}/Collections/{collection_id}/Items",
         headers=headers,
         params={"ids": ",".join(item_ids)},
-        timeout=15,
+        timeout=60,
     ).raise_for_status()
     print(f"updated Jellyfin collection '{collection_name}' with {len(item_ids)} items")
 
