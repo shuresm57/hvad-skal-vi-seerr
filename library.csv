@@ -1,0 +1,54 @@
+item_id,title,year,genres,watched,requested,label
+3ba9ec4fe723b080331fc70bc2680f72,Another Round,2020,Comedy|Drama,0,1,0
+165e4631f2dec05c0369685e37d787ef,Avatar Aang - The Last Airbender (2026),2026,Animation|Adventure|Fantasy|Action,1,1,1
+0174d092b778a3de0d095e3853d57d07,Barbie,2023,Comedy|Adventure|Fantasy,0,1,0
+11c7b57f1e37f8fa3bbcf2ad6c48289d,The Batman,2022,Crime|Mystery|Thriller,0,1,0
+d6113040912eb6594c818f97d3a24ce7,Batman Begins,2005,Drama|Crime|Action,1,1,1
+e957644e7099a218507335c3105f8871,Batman: The Dark Knight Returns,2013,Animation|Action|Mystery|Science Fiction,1,1,1
+7cabc005c48ffea83bee07c8627e1978,Black Bird,2022,Drama|Crime,0,1,0
+6a87287dd27cc17e78d4d400d3f4a8c5,The Dark Knight,2008,Action|Thriller|Crime,0,1,0
+ae36c761c88b795ca3516363e25e1caf,The Dark Knight Rises,2012,Action|Crime|Drama|Thriller,0,1,0
+d435cf2388841d1cd3848f5ffecd5c3a,Django Unchained,2012,Drama|Western,0,1,0
+d8312c002aa1d3d7bdfff0c6bb97e96b,The Drama,2026,Romance|Comedy|Drama,0,1,0
+2f2743889b9faf109fd04ad8a7220291,Dune,2021,Science Fiction|Adventure,0,1,0
+bf4d3d502c346a4ea07e61c678138be6,Dune: Part Two,2024,Science Fiction|Adventure,0,1,0
+462d3a8998af804e36c979a1d8901b9b,F1,2025,Action|Drama,0,1,0
+6d572e2d5f8c58e00a3abf7a6d945a6a,Flickering Lights,2000,Action|Comedy|Crime,0,1,0
+c776dd6b8bf7331be1a43a3b7dabec47,Fury,2014,War|Drama|Action,1,1,1
+269eadb028b9b4add931c230911e477f,The Girl with the Needle,2024,Drama|History,0,1,0
+c079162fe884a2b78263f471b1bf1b71,Harry Potter and the Chamber of Secrets,2002,Adventure|Fantasy,0,1,0
+93fe3f74bd66d050da0637ee9ddbdd4e,Harry Potter and the Deathly Hallows: Part 1,2010,Adventure|Fantasy,0,1,0
+acc2caa3e49c0e2a757d57336113ce7f,Harry Potter and the Deathly Hallows: Part 2,2011,Adventure|Fantasy,0,1,0
+d10353afa29d644e3ecf37d45aaccfaf,Harry Potter and the Goblet of Fire,2005,Adventure|Fantasy,0,1,0
+f85823d3dc2aa41d4a9c77a2d24d4a21,Harry Potter and the Half-Blood Prince,2009,Adventure|Fantasy,0,1,0
+250c3d0a629b6ced0822cdf761b0cbb8,Harry Potter and the Order of the Phoenix,2007,Adventure|Fantasy,0,1,0
+0b69da79c200732bc2db061c7c77fe4a,Harry Potter and the Philosopher's Stone,2001,Adventure|Fantasy,0,1,0
+3df24e8100d0a79b6b0c1449a7b675af,Harry Potter and the Prisoner of Azkaban,2004,Adventure|Fantasy,0,1,0
+12c10fbdb4cdb436914f01641a445fc4,The Hateful Eight,2015,Drama|Mystery|Western,1,1,1
+951358b4568e5210b1eaa5cd5133ddc6,Headhunter,2009,Thriller,0,1,0
+1e8f9d1602612765e91f70499fe460cf,The Hunt,2012,Drama,0,1,0
+9c01cdb5433df98540285954b6c25f90,If I Had Legs I'd Kick You (2025),2025,,0,0,0
+57bf0e556f7c9127079823729227411f,The Imitation Game (2014),2014,,0,0,0
+239b0c1fd59d86c7423c148ac5dd85c5,Inception,2010,Action|Science Fiction|Adventure,0,1,0
+f0ae542c9f7e0ef0d6e1a0b055803234,Inglourious Basterds,2009,Drama|Thriller|War,1,1,1
+face8cb67f3b28416666979b0417bfc0,Kill Bill: Vol. 1,2003,Action|Crime,0,1,0
+f77750cd512bfc623c3da098b5004c33,Kill Bill: Vol. 2,2004,Action|Crime|Thriller,1,1,1
+4a57b48e6e3769b57a9fd999664f7d0d,The Last Viking,2025,Comedy|Crime|Drama,0,1,0
+1b45a42d802eda1c0086380c8f05337c,Materialists,2025,Romance|Drama,0,1,0
+5f50c8b5084c3657a0374751591c3c37,Men & Chicken,2015,Comedy|Drama,0,1,0
+d341540247e3d127a1029578de22256c,Normal,2026,Action|Crime|Thriller,0,1,0
+2ae69f622ae48ec71152e4121fc6c27c,The Promised Land,2023,Action|Drama|History,0,1,0
+cd36ddd13bb27912934302cba18e773a,Pulp Fiction,1994,Thriller|Crime|Comedy,0,1,0
+f887255578130c28672b1c427588b22f,Pusher,1996,Action|Crime|Drama,0,1,0
+ac457a1133ef38bdafd13fa0122fd7b4,Pusher 3,2005,Action|Thriller|Crime,0,1,0
+e2a6eaeb4cacf6a12ca5507d9f8e3b8c,Pusher II,2004,Action|Crime|Drama,0,1,0
+57716a2aad56731f25301e2a6e4826f5,Reservoir Dogs,1992,Crime|Thriller,0,1,0
+3fa5b4b2cc9d44e5f8fa794b7f57994d,The Rookie,2018,Comedy|Crime|Drama,0,1,0
+58be82c5e7356bf9b9fb75f13926227e,Slow Horses,2022,Crime|Drama|Mystery,0,1,0
+15f61559d19044d4557fa0df18a456c0,Spider-Man,2002,Action|Science Fiction,1,1,1
+6fc02499484153b37856bcda0e66af9f,Spider-Man: Brand New Day,2026,Science Fiction|Action|Adventure,1,1,1
+f585e5704ec065296419c53eeb250d74,Ted Lasso,2020,Drama|Comedy,0,1,0
+16c934b768af44d346b1c9e21de3db74,The Terminator,1984,Action|Thriller|Science Fiction,0,1,0
+49a706297d9985674e2417d195b41a75,Top Gun: Maverick,2022,Action|Drama,0,1,0
+a12adb5a35637d28205b55361542a86b,Tuner,2026,Crime|Drama|Thriller,1,1,1
+0c805f48a87828fcb0a0ae197b8f7000,Your Friends & Neighbors,2025,Drama|Crime,0,1,0
