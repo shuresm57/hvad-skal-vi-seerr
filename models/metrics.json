@@ -1,6 +1,6 @@
 {
-  "val_accuracy": 0.6363636255264282,
-  "val_precision_at_10": 0.30000001192092896,
+  "val_accuracy": 0.6363636363636364,
+  "val_precision_at_10": 0.3,
   "n_items": 53,
   "n_genres": 14,
   "n_positive": 10
