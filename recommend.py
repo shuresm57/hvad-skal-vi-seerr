@@ -13,31 +13,16 @@ import numpy as np
 import pandas as pd
 import requests
 
+import features
+
 MODELS_DIR = Path(__file__).parent / "models"
 
 
 def load_model():
     weights = np.load(MODELS_DIR / "weights.npy")
     bias = json.loads((MODELS_DIR / "bias.json").read_text())["bias"]
-    genre_vocab = json.loads((MODELS_DIR / "genre_vocab.json").read_text())
-    year_stats = json.loads((MODELS_DIR / "year_stats.json").read_text())
-    return weights, bias, genre_vocab, year_stats
-
-
-def featurize(df, genre_vocab, year_stats):
-    genre_index = {g: i for i, g in enumerate(genre_vocab)}
-    genre_lists = df["genres"].fillna("").apply(lambda g: g.split("|") if g else [])
-
-    genre_features = np.zeros((len(df), len(genre_vocab)), dtype=np.float32)
-    for row, genre_list in enumerate(genre_lists):
-        for g in genre_list:
-            if g in genre_index:
-                genre_features[row, genre_index[g]] = 1.0
-
-    year = df["year"].fillna(year_stats["mean"])
-    year_feature = ((year - year_stats["mean"]) / year_stats["std"]).to_numpy(dtype=np.float32).reshape(-1, 1)
-
-    return np.concatenate([genre_features, year_feature], axis=1)
+    encoding = features.load(MODELS_DIR)
+    return weights, bias, encoding
 
 
 def jellyfin_push(item_ids, collection_name):
@@ -86,7 +71,7 @@ def jellyfin_push(item_ids, collection_name):
 
 
 def recommend(library_path: str, top_n: int, collection_name: str):
-    weights, bias, genre_vocab, year_stats = load_model()
+    weights, bias, encoding = load_model()
     df = pd.read_csv(library_path)
 
     unwatched = df[df["label"] == 0].reset_index(drop=True)
@@ -94,7 +79,7 @@ def recommend(library_path: str, top_n: int, collection_name: str):
         print("Nothing unwatched in this library export - time to request more.")
         return
 
-    X = featurize(unwatched, genre_vocab, year_stats)
+    X = features.transform(unwatched, encoding)
     scores = 1 / (1 + np.exp(-(X @ weights + bias)))
     unwatched = unwatched.assign(score=scores).sort_values("score", ascending=False)
     top = unwatched.head(top_n)
