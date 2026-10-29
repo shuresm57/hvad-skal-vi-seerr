@@ -38,11 +38,32 @@ python -m pipeline.recommend
 
 Tests: `pip install -r requirements/dev.txt && pytest -q`
 
-## Cron
+## Scheduling (NixOS)
+
+`nix/service.nix` is a systemd timer that runs the four stages nightly. Add it
+to your configuration and rebuild:
+
+```nix
+imports = [ /root/hvad-skal-vi-seerr/nix/service.nix ];
+```
+
+Credentials come from a gitignored `.env.local` in the repo root (`KEY=VALUE`
+per line, no `export`) via systemd's `EnvironmentFile`:
 
 ```
-0 4 * * * cd /root/hvad-skal-vi-seerr && set -a && . .env.local && set +a && nix-shell -p python3 python3Packages.numpy python3Packages.pandas python3Packages.requests --run "python3 -m pipeline.export_history && python3 -m pipeline.validate_library && python3 -m pipeline.train_local && python3 -m pipeline.recommend" >> /var/log/hvad-skal-vi-seerr.log 2>&1
+JELLYFIN_URL=http://...
+JELLYFIN_API_KEY=...
+JELLYFIN_USER_ID=...
+JELLYSEERR_URL=http://...
+JELLYSEERR_API_KEY=...
 ```
 
-`set -a` is required - plain `. .env.local` doesn't export to the Python
-processes. The `&&` chain stops a retrain on a failed validation.
+The unit pins its own Python (`python3.withPackages`) rather than calling
+`nix-shell` at runtime, and `Type = "oneshot"` runs the stages in order and
+skips the rest if one fails - so a failed validation stops the retrain.
+
+```
+systemctl start hvad-skal-vi-seerr     # run it now
+systemctl list-timers hvad-skal-vi-seerr
+journalctl -u hvad-skal-vi-seerr -n 50
+```
