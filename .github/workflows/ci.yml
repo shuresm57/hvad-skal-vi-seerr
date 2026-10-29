@@ -15,6 +15,9 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+          # setup-python's pip cache only looks for **/requirements.txt by
+          # default, and this repo splits its deps per environment instead.
+          cache-dependency-path: requirements-*.txt
 
       - name: Install dependencies
         run: pip install -r requirements-infer.txt -r requirements-dev.txt
