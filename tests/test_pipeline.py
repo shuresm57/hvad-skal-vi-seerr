@@ -2,10 +2,8 @@
 import numpy as np
 import pandas as pd
 
-import features
-import train_local
-import validate_library
-from test_features import make_df
+from pipeline import LIBRARY_CSV, features, train_local, validate_library
+from tests.test_features import make_df
 
 
 def healthy_df(n=40):
@@ -136,6 +134,6 @@ def test_validation_rejects_a_library_with_no_genres():
 
 def test_real_library_passes_validation():
     """The committed library.csv is what CI trains on, so it must stay valid."""
-    df = pd.read_csv("library.csv")
+    df = pd.read_csv(LIBRARY_CSV)
 
     assert validate_library.validate(df) == []

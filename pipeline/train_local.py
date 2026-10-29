@@ -20,15 +20,11 @@ import argparse
 import csv
 import json
 from datetime import datetime, timezone
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-import features
-
-MODELS_DIR = Path(__file__).parent / "models"
-HISTORY_PATH = Path(__file__).parent / "metrics_history.csv"
+from . import LIBRARY_CSV, METRICS_HISTORY_CSV, MODELS_DIR, features
 
 SEED = 42
 LR = 0.05
@@ -72,7 +68,7 @@ def evaluate(X, y, weight, bias, k=10):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--library", default="library.csv")
+    parser.add_argument("--library", default=LIBRARY_CSV)
     parser.add_argument(
         "--dry-run",
         action="store_true",
@@ -138,8 +134,8 @@ def main():
             "promoted": promoted,
             **new_metrics,
         }
-        write_header = not HISTORY_PATH.exists()
-        with HISTORY_PATH.open("a", newline="") as f:
+        write_header = not METRICS_HISTORY_CSV.exists()
+        with METRICS_HISTORY_CSV.open("a", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=list(row.keys()))
             if write_header:
                 writer.writeheader()

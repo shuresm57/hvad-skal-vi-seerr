@@ -15,7 +15,7 @@ import sys
 
 import pandas as pd
 
-import features
+from . import LIBRARY_CSV, features
 
 # A single-user library is naturally imbalanced - you've watched a minority of
 # what you own - so these bounds are wide. They are here to catch a label that
@@ -82,7 +82,7 @@ def validate(df: pd.DataFrame) -> list:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--library", default="library.csv")
+    parser.add_argument("--library", default=LIBRARY_CSV)
     args = parser.parse_args()
 
     df = pd.read_csv(args.library)

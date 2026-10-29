@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import features
+from pipeline import features
 
 
 def make_df(years=None, genres=None, labels=None):

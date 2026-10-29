@@ -2,20 +2,17 @@
 trained in train.ipynb on Colab from your exported library.csv, then push the
 top picks into a Jellyfin Collection so they show up in the Jellyfin app.
 
-Needs numpy + pandas + requests (see requirements-infer.txt) - no torch required here.
+Needs numpy + pandas + requests (see requirements/infer.txt) - no torch here.
 """
 import argparse
 import json
 import os
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import requests
 
-import features
-
-MODELS_DIR = Path(__file__).parent / "models"
+from . import LIBRARY_CSV, MODELS_DIR, features
 
 
 def load_model():
@@ -96,7 +93,7 @@ def recommend(library_path: str, top_n: int, collection_name: str):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Rank your unwatched Jellyfin library with the model trained on Colab.")
-    parser.add_argument("--library", default="library.csv", help="path to the CSV from export_history.py")
+    parser.add_argument("--library", default=LIBRARY_CSV, help="path to the CSV from export_history.py")
     parser.add_argument("--top_n", type=int, default=10)
     parser.add_argument("--collection", default="Recommended for you", help="Jellyfin collection name to create/update")
     args = parser.parse_args()

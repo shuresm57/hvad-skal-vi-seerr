@@ -17,8 +17,11 @@ Optional (skip to export Jellyfin data only):
 import argparse
 import csv
 import os
+from pathlib import Path
 
 import requests
+
+from . import LIBRARY_CSV
 
 
 def jellyfin_headers(api_key):
@@ -73,7 +76,7 @@ def fetch_jellyseerr_requested_tmdb_ids(base_url, api_key):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--list-users", action="store_true", help="print Jellyfin users and exit")
-    parser.add_argument("--out", default="library.csv")
+    parser.add_argument("--out", default=LIBRARY_CSV)
     args = parser.parse_args()
 
     jellyfin_url = os.environ["JELLYFIN_URL"].rstrip("/")
@@ -113,6 +116,7 @@ def main():
             "label": int(label),
         })
 
+    Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     with open(args.out, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=["item_id", "title", "year", "genres", "watched", "requested", "label"])
         writer.writeheader()
