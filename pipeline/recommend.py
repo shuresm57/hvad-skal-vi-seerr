@@ -5,21 +5,12 @@ top picks into a Jellyfin Collection so they show up in the Jellyfin app.
 Needs numpy + pandas + requests (see requirements/infer.txt) - no torch here.
 """
 import argparse
-import json
 import os
 
-import numpy as np
 import pandas as pd
 import requests
 
-from . import LIBRARY_CSV, MODELS_DIR, features
-
-
-def load_model():
-    weights = np.load(MODELS_DIR / "weights.npy")
-    bias = json.loads((MODELS_DIR / "bias.json").read_text())["bias"]
-    encoding = features.load(MODELS_DIR)
-    return weights, bias, encoding
+from . import LIBRARY_CSV, model
 
 
 def jellyfin_push(item_ids, collection_name):
@@ -68,7 +59,6 @@ def jellyfin_push(item_ids, collection_name):
 
 
 def recommend(library_path: str, top_n: int, collection_name: str):
-    weights, bias, encoding = load_model()
     df = pd.read_csv(library_path)
 
     unwatched = df[df["label"] == 0].reset_index(drop=True)
@@ -76,8 +66,7 @@ def recommend(library_path: str, top_n: int, collection_name: str):
         print("Nothing unwatched in this library export - time to request more.")
         return
 
-    X = features.transform(unwatched, encoding)
-    scores = 1 / (1 + np.exp(-(X @ weights + bias)))
+    scores = model.score(unwatched, model.load())
     unwatched = unwatched.assign(score=scores).sort_values("score", ascending=False)
     top = unwatched.head(top_n)
 
