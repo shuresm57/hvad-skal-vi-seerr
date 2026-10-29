@@ -17,21 +17,21 @@ jobs:
           cache: pip
           # setup-python's pip cache only looks for **/requirements.txt by
           # default, and this repo splits its deps per environment instead.
-          cache-dependency-path: requirements-*.txt
+          cache-dependency-path: requirements/*.txt
 
       - name: Install dependencies
-        run: pip install -r requirements-infer.txt -r requirements-dev.txt
+        run: pip install -r requirements/infer.txt -r requirements/dev.txt
 
       - name: Unit tests
         run: pytest -q
 
-      # library.csv is committed, so CI can validate and train on the same
+      # data/library.csv is committed, so CI can validate and train on the same
       # data the scheduled job uses - no Jellyfin credentials, no network.
       - name: Validate the committed library
-        run: python validate_library.py
+        run: python -m pipeline.validate_library
 
       # Training is deterministic, so this is a real regression gate: break
       # featurization or the training loop and accuracy drops below the floor
       # and the build fails. --dry-run keeps it from writing model artifacts.
       - name: Train and enforce the accuracy floor
-        run: python train_local.py --dry-run --min-accuracy 0.55
+        run: python -m pipeline.train_local --dry-run --min-accuracy 0.55
