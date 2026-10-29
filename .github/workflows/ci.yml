@@ -1,0 +1,34 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements-infer.txt -r requirements-dev.txt
+
+      - name: Unit tests
+        run: pytest -q
+
+      # library.csv is committed, so CI can validate and train on the same
+      # data the scheduled job uses - no Jellyfin credentials, no network.
+      - name: Validate the committed library
+        run: python validate_library.py
+
+      # Training is deterministic, so this is a real regression gate: break
+      # featurization or the training loop and accuracy drops below the floor
+      # and the build fails. --dry-run keeps it from writing model artifacts.
+      - name: Train and enforce the accuracy floor
+        run: python train_local.py --dry-run --min-accuracy 0.55
