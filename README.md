@@ -7,11 +7,14 @@ watch history + Jellyseerr requests, pushed back into Jellyfin as a Collection.
 Content-based, not collaborative filtering - it's one person's history.
 
 ```
-export_history -> validate_library -> train_local -> recommend
+export_history -> validate_library -> train_local -> recommend   (what you own)
+                                                   \-> discover  (what you don't)
 ```
 
-- `pipeline/features.py` is the only encoder both training and serving use, so
-  they can't drift apart (they had: median vs. mean imputation).
+- `pipeline/features.py` is the only encoder every stage uses, so they can't
+  drift apart (they had: median vs. mean imputation). `discover` scores a
+  completely different data source - Jellyseerr's TMDB feed - through that same
+  encoder and `pipeline/model.py`, with no separate scoring path.
 - `validate_library` refuses a saturated or empty label before training on it.
 - `train_local` only promotes a model if validation accuracy holds up; every
   attempt lands in `data/metrics_history.csv`.
@@ -20,7 +23,10 @@ export_history -> validate_library -> train_local -> recommend
   accuracy floor.
 
 Caveats: the promotion gate compares runs whose validation splits differ, and
-at 53 items / 10 positives the accuracy is mostly noise. The pipeline is the point.
+at 53 items / 10 positives the accuracy is mostly noise. With only genre and
+release year as features, `discover` is effectively ranking popular films by
+genre affinity - cast, director and ratings are all available from the APIs and
+unused. The pipeline is the point.
 
 ## Run
 
@@ -35,6 +41,17 @@ python -m pipeline.validate_library
 python -m pipeline.train_local
 python -m pipeline.recommend
 ```
+
+To rank things you *don't* own, from Jellyseerr's discover feed:
+
+```
+python -m pipeline.discover                      # print only
+python -m pipeline.discover --request 3          # actually request the top 3
+```
+
+`--request` triggers real downloads, so it defaults to off. Titles Jellyseerr
+already has a record for (owned, requested, downloading) are skipped, as are
+unreleased and obscure ones (`--min-votes`).
 
 Tests: `pip install -r requirements/dev.txt && pytest -q`
 
